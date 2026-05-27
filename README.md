@@ -1,81 +1,81 @@
 # Automarket Aggregator API
 
-A backend pet-project built with **Java 21** and **Spring Boot 3.x**. It is a REST API for a peer-to-peer (P2P) car marketplace where individual users can look up, buy, sell, and review vehicles directly with each other without middlemen. 
+Бэкенд пет-проект, разработанный на **Java 21** и **Spring Boot 3.x**. Это REST API для автомобильного маркетплейса, где обычные пользователи могут искать, покупать, продавать и оценивать автомобили напрямую друг с другом (P2P) без посредников.
 
-I developed this project for my portfolio to practice building clean backend architectures, working with relational databases, setting up multi-container Docker environments, and handling dynamic search logic.
-
----
-
-### 🛠 Tech Stack
-
-* **Programming language:** Java 21
-* **Core Framework:** Spring Boot 3.x
-* **Data Layer:** Spring Data JPA / Hibernate
-* **Database:** PostgreSQL 16
-* **Database Migrations:** Flyway
-* **Containerization:** Docker & Docker Compose
-* **Build Tool:** Maven
-* **Validation:** Jakarta / Hibernate Validation
-* **Utilities:** Project Lombok, Redis 7
+Я создал этот проект для своего портфолио, чтобы попрактиковаться в построении чистой архитектуры приложения, работе с реляционными базами данных, настройке мультиконтейнерной среды Docker и реализации динамической логики поиска.
 
 ---
 
-### ✨ Features & Business Logic
+### 🛠 Технологический стек
 
-* **P2P Marketplace:** Users can easily register profiles, create car listings, update information, and delete their advertisements.
-* **Car Catalog:** A multi-level car catalog linking manufacturing Countries, Brands, Models, Generations, and precise Technical Modifications (Horsepower, Engine Volume, Transmission, and Drive Type).
-* **Review System:** Buyers can leave feedback and ratings for sellers. The database constraints prevent users from voting multiple times on the same review.
-* **Location Filtering:** Listings are tied to specific Cities and Countries, allowing buyers to find vehicles in their region.
-
----
-
-### 🏗 Architecture & Code Highlights
-
-The application follows a standard **Layered Architecture** (Controllers -> Services -> Repositories) with the following technical implementations:
-
-* **Dynamic Filters (JPA Criteria API):** Built a flexible search engine via `AdvertisementSpecification`. It dynamically handles search parameters (price range, mileage, brand, model) and correctly processes current car production ranges when `yearEnd` is null.
-* **Ownership Checks (Pre-Security):** Write and delete controllers (`PUT`/`DELETE`) accept explicit `userId` request parameters to verify that only the actual author can modify or delete their listings and reviews.
-* **Global Error Handling:** Implemented a unified `@RestControllerAdvice` (`GlobalHandlerException`) that intercepts validation bugs (`MethodArgumentNotValidException`) and missing records, mapping them into clean `ApiErrorResponse` payloads.
-* **Clean Data Contracts:** Used modern **Java Records** for DTOs to keep transport data immutable, clean, and decoupled from raw database entities.
-* **Database Management:** Used Flyway scripts to version control the PostgreSQL schema, automatically setting up lookup data and adding native SQL indexes for performance.
-* **Docker Compose Multi-Container Setup:** Configured `docker-compose.yml` to automatically link the Spring app, PostgreSQL database, and a Redis container with persistent data volumes (`pgdata`, `redisdata`).
+* **Язык программирования:** Java 21
+* **Основной фреймворк:** Spring Boot 3.x
+* **Доступ к данным:** Spring Data JPA / Hibernate
+* **База данных:** PostgreSQL 16
+* **Миграции базы данных:** Flyway
+* **Контейнеризация:** Docker & Docker Compose
+* **Сборщик проекта:** Maven
+* **Валидация:** Jakarta / Hibernate Validation
+* **Утилиты:** Project Lombok, Redis 7
 
 ---
 
-### 🔮 Project Roadmap (Future Enhancements)
+### ✨ Возможности и бизнес-логика
 
-Since this is a growing pet-project, I plan to add the following features next:
-* **Security:** Integrate **Spring Security with JWT** to replace ad-hoc `userId` requests with proper token authentication.
-* **Caching (Redis):** Set up `@Cacheable` methods to store heavy car catalog queries in Redis.
-* **Documentation:** Add **Swagger / OpenAPI** for automated interactive endpoint testing.
+* **P2P-маркетплейс:** Пользователи могут регистрировать профили, создавать объявления о продаже машин, обновлять информацию и удалять свои публикации.
+* **Каталог автомобилей:** Многоуровневый справочник, связывающий Страны производства, Бренды, Модели, Поколения и конкретные технические Модификации (мощность, объем двигателя, тип трансмиссии и привод).
+* **Система отзывов:** Покупатели могут оставлять отзывы и оценки продавцам. Ограничения на уровне базы данных не позволяют пользователям голосовать несколько раз за один и тот же отзыв.
+* **Фильтрация по локации:** Объявления привязаны к конкретным Городам и Странам, что позволяет покупателям находить автомобили в своем регионе.
 
 ---
 
-### 📂 Project Structure
+### 🏗 Архитектурные особенности и качество кода
+
+Приложение следует стандартной **Многослойной архитектуре** (Controllers -> Services -> Repositories) со следующими техническими решениями:
+
+* **Динамические фильтры (JPA Criteria API):** Реализован гибкий поисковый движок через `AdvertisementSpecification`. Он динамически обрабатывает параметры поиска (диапазон цен, пробег, бренд, модель) и корректно обрабатывает актуальные модели авто, находящихся в производстве, когда `yearEnd` равен null.
+* **Проверка владения записями (Pre-Security):** Контроллеры обновления и удаления (`PUT`/`DELETE`) принимают явные параметры `userId` для проверки того, что только реальный автор может изменять или удалять свои объявления и отзывы.
+* **Глобальная обработка ошибок:** Внедрен единый обработчик ошибок `@RestControllerAdvice` (`GlobalHandlerException`), который перехватывает ошибки валидации (`MethodArgumentNotValidException`) и отсутствие записей, преобразуя их в понятные ответы `ApiErrorResponse`.
+* **Чистые контракты данных:** Для DTO используются современные **Java Records**, что гарантирует неизменяемость транспортных данных и отделяет их от сущностей базы данных.
+* **Управление базой данных:** Используются Flyway-скрипты для версионирования схемы PostgreSQL, автоматического наполнения справочников и добавления SQL-индексов для производительности.
+* **Настройка Docker Compose:** Конфигурация `docker-compose.yml` автоматически связывает Spring-приложение, базу данных PostgreSQL и контейнер Redis с постоянными хранилищами данных (`pgdata`, `redisdata`).
+
+---
+
+### 🔮 План развития (Roadmap)
+
+Так как это развивающийся пет-проект, в будущем я планирую добавить:
+* **Безопасность:** Интегрировать **Spring Security с JWT**, чтобы заменить ручную передачу `userId` в параметрах на полноценную аутентификацию по токенам.
+* **Кэширование (Redis):** Настроить методы `@Cacheable` для сохранения тяжелых запросов автокаталога в Redis.
+* **Документация:** Добавить **Swagger / OpenAPI** для автоматического тестирования эндпоинтов.
+
+---
+
+### 📂 Структура проекта
 
 ```text
 com.automarket.automarket_service
-├── controllers   # REST API Endpoints & Request Handling
-├── services      # Business Logic Execution
-├── repositories  # Database Layer & JPA Specifications
-├── entities      # Database Domain Models (PostgreSQL mappings)
-├── dtos          # Immutable Java Records for API requests/responses
-└── exceptions    # Global Error Handling & custom exception types
+├── controllers   # REST API Эндпоинты и обработка HTTP-запросов
+├── services      # Реализация основной бизнес-логики приложения
+├── repositories  # Интерфейсы базы данных и JPA-спецификации динамического поиска
+├── entities      # Доменные модели базы данных (маппинг таблиц PostgreSQL)
+├── dtos          # Неизменяемые Java Records для безопасного обмена данными
+└── exceptions    # Обработчик GlobalHandlerException, @RestControllerAdvice и кастомные ошибки
 ```
 
 ---
 
-### 🚀 Local Launch & Quick Start
+### 🚀 Локальный запуск
 
-You can build and spin up the entire infrastructure locally using a single command:
+Вы можете собрать и запустить всю инфраструктуру локально одной командой:
 
-1. **Clone the repository:**
+1. **Клонируйте репозиторий:**
    ```bash
-   git clone <your-repository-url>
+   git clone <ссылка-на-ваш-репозиторий>
    cd automarket-service
    ```
-2. **Create a `.env` file:**
-   Create a `.env` file in the root folder with your database credentials:
+2. **Создайте файл `.env`:**
+   Создайте файл `.env` в корневой папке с вашими доступами к базе данных:
    ```env
    APP_NAME=automarket-service
    DB_NAME=automarket_db
@@ -85,55 +85,55 @@ You can build and spin up the entire infrastructure locally using a single comma
    REDIS_PORT=6379
    BACKEND_PORT=8080
    ```
-3. **Run via Docker Compose:**
+3. **Запустите через Docker Compose:**
    ```bash
    docker-compose up --build
    ```
-   The application will be live at `http://localhost:8080`.
+   Приложение будет доступно по адресу `http://localhost:8080`.
 
 ---
 
-### 📋 API Reference
+### 📋 Справочник API (API Reference)
 
-#### 🚗 Advertisements (`/api/v1/advertisements`)
-* `GET /` — Get paginated list of all active listings (Defaults to 10 items, sorted by newest)
-* `GET /search` — Multi-parameter car search with pagination (`AdvertisementSearchDto`)
-* `GET /{id}` — Fetch extended details of a specific vehicle (`AdvertisementResponseExtendedDto`)
-* `POST /` — Create a new car listing (`CreateAdvertisementDto`)
-* `PUT /` — Update listing specs, requires query validation params `advertisementId` and `userId`
-* `DELETE /` — Remove listing, requires ownership query params `advertisementId` and `userId`
+#### 🚗 Объявления (`/api/v1/advertisements`)
+* `GET /` — Получить список всех активных объявлений (С пагинацией по 10 элементов, сортировка от новых к старым)
+* `GET /search` — Динамический поиск автомобилей по множеству параметров с пагинацией (`AdvertisementSearchDto`)
+* `GET /{id}` — Получить полные расширенные данные о конкретном автомобиле (`AdvertisementResponseExtendedDto`)
+* `POST /` — Создать новое объявление о продаже машины (`CreateAdvertisementDto`)
+* `PUT /` — Обновить параметры объявления, требуются query-параметры `advertisementId` и `userId` для проверки владения
+* `DELETE /` — Удалить объявление, требуются query-параметры `advertisementId` and `userId` для подтверждения владения
 
-#### 📂 Car Catalog (`/api/v1/catalog`)
-* `GET /colors` — List all available car colors (`List<Color>`)
-* `GET /colors/{id}` — Fetch specific color by ID
-* `GET /cities` — List all indexed deployment cities (`List<City>`)
-* `GET /cities/{id}` — Fetch specific city by ID
-* `GET /brands` — Get all available car brands (`BrandResponseDto`)
-* `GET /brands/{id}` — Fetch brand details by ID
-* `GET /brands/country/{id}` — Find all car brands under a specific country ID
-* `GET /models` — Get all car models with pagination (`BrandAndModelResponseDto`)
-* `GET /models/{id}` — Fetch specific model specifications by ID
-* `GET /models/brand/{id}` — Fetch all models belonging to a specific brand
-* `GET /generations` — Get all vehicle generations with pagination (`GenerationResponseDto`)
-* `GET /generations/{id}` — Fetch vehicle generation details by ID
-* `GET /countries` — List all car manufacturing countries (`CountryResponseDto`)
-* `GET /countries/{id}` — Fetch country details by ID
+#### 📂 Каталог автомобилей (`/api/v1/catalog`)
+* `GET /colors` — Получить полный плоский список доступных цветов (`List<Color>`)
+* `GET /colors/{id}` — Получить данные конкретного цвета по его ID
+* `GET /cities` — Получить полный список городов работы сервиса (`List<City>`)
+* `GET /cities/{id}` — Получить данные конкретного города по его ID
+* `GET /brands` — Получить список автомобильных брендов (`BrandResponseDto`)
+* `GET /brands/{id}` — Получить данные конкретного автобренда по его ID
+* `GET /brands/country/{id}` — Найти все автомобильные бренды, зарегистрированные в конкретной стране
+* `GET /models` — Получить список всех моделей автомобилей с пагинацией (`BrandAndModelResponseDto`)
+* `GET /models/{id}` — Получить спецификацию конкретной модели по её ID
+* `GET /models/brand/{id}` — Получить все модели, принадлежащие выбранному автобренду
+* `GET /generations` — Получить список поколений автомобилей с пагинацией (`GenerationResponseDto`)
+* `GET /generations/{id}` — Получить детальную информацию о поколении автомобиля по его ID
+* `GET /countries` — Получить список стран-производителей (`CountryResponseDto`)
+* `GET /countries/{id}` — Получить данные профиля страны по её ID
 
-#### 👤 Users (`/api/v1/users`)
-* `GET /` — List all registered profiles (Paginated, sorted by ID)
-* `GET /email/{email}` — Look up user profile by exact email string
-* `GET /phoneNumber/{phoneNumber}` — Look up user profile by phone number string
-* `GET /userName/{userName}` — Find a list of users matching a given username
-* `GET /role/{role}` — Retrieve paginated profile list filtered by role types
-* `GET /search` — Query user profiles by optional `email` or `phoneNumber` request params
-* `GET /count/{userName}` — Get total counter metrics reporting identical names (`UserCounterResponseDto`)
-* `POST /` — Register a new user account (`CreateUserDto`)
-* `PUT /update/{id}` — Update user profile details by Path ID (`UpdateUserDto`)
-* `DELETE /{id}` — Purge user account and associated profile data by Path ID
+#### 👤 Пользователи (`/api/v1/users`)
+* `GET /` — Получить список всех зарегистрированных пользователей (С пагинацией, сортировка по ID)
+* `GET /email/{email}` — Найти профиль пользователя по точному совпадению email
+* `GET /phoneNumber/{phoneNumber}` — Найти профиль пользователя по номеру телефона
+* `GET /userName/{userName}` — Получить список пользователей с одинаковым или похожим именем
+* `GET /role/{role}` — Получить список пользователей, отфильтрованный по их роли (С пагинацией)
+* `GET /search` — Найти пользователя по опциональным параметрам запроса `email` или `phoneNumber`
+* `GET /count/{userName}` — Получить общее количество пользователей с одинаковым именем (`UserCounterResponseDto`)
+* `POST /` — Зарегистрировать новый аккаунт на платформе (`CreateUserDto`)
+* `PUT /update/{id}` — Обновить данные профиля пользователя по его ID в пути (`UpdateUserDto`)
+* `DELETE /{id}` — Полностью удалить профиль пользователя и связанные данные по его ID в пути
 
-#### 💬 Reviews & Ratings (`/api/v1/reviews`)
-* `GET /` — Get all user reviews (Paginated, sorted by newest)
-* `GET /{id}` — Fetch a specific review entry using its ID record
-* `POST /` — Post a new transaction/seller review (`CreateReviewDto`)
-* `PUT /` — Update an existing review, verified by request parameters `userId` and `reviewId`
-* `DELETE /` — Remove review, verified by request parameters `reviewId` and `userId`
+#### 💬 Отзывы и рейтинги (`/api/v1/reviews`)
+* `GET /` — Получить список всех отзывов в системе (С пагинацией, сортировка от новых к старым)
+* `GET /{id}` — Получить конкретный отзыв по его ID
+* `POST /` — Опубликовать новый отзыв о сделке/продавце (`CreateReviewDto`)
+* `PUT /` — Изменить существующий отзыв, требуются query-параметры `userId` и `reviewId` для проверки автора
+* `DELETE /` — Удалить отзыв из системы, требуются query-параметры `reviewId` и `userId` для проверки прав автора

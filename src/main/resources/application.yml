@@ -4,10 +4,6 @@ server:
 spring:
   application:
     name: ${APP_NAME}
-    cache:
-      ttl:
-        users: 10m
-        products: 2h
   datasource:
     url: jdbc:postgresql://localhost:${DB_PORT}/${DB_NAME}
     username: ${DB_USER}
