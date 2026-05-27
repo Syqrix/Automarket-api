@@ -1,0 +1,142 @@
+DROP TABLE IF EXISTS countries CASCADE;
+DROP TABLE IF EXISTS brands CASCADE;
+DROP TABLE IF EXISTS models CASCADE;
+DROP TABLE IF EXISTS generations CASCADE;
+DROP TABLE IF EXISTS modifications CASCADE;
+DROP TABLE IF EXISTS types_of_engine CASCADE;
+DROP TABLE IF EXISTS types_of_oil CASCADE;
+DROP TABLE IF EXISTS types_of_drive CASCADE;
+DROP TABLE IF EXISTS types_of_wheel_side CASCADE;
+DROP TABLE IF EXISTS volumes_of_engine CASCADE;
+DROP TABLE IF EXISTS transmissions CASCADE;
+DROP TABLE IF EXISTS car_body_types CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS advertisement CASCADE;
+DROP TABLE IF EXISTS reviews CASCADE;
+DROP TABLE IF EXISTS colors CASCADE;
+DROP TABLE IF EXISTS cities CASCADE;
+DROP TABLE IF EXISTS marks_of_reviews CASCADE;
+
+
+CREATE TABLE countries (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    country_name VARCHAR(64) NOT NULL UNIQUE
+);
+
+CREATE TABLE brands (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    brand_name VARCHAR(64) NOT NULL UNIQUE,
+    country_id SMALLINT NOT NULL REFERENCES countries(id) ON DELETE CASCADE
+);
+
+CREATE TABLE models (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    model_name VARCHAR(64) NOT NULL,
+    brand_id SMALLINT NOT NULL REFERENCES brands(id) ON DELETE CASCADE
+);
+
+CREATE TABLE generations (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    year_start SMALLINT NOT NULL,
+    year_end SMALLINT,
+    generation_name VARCHAR(128) NOT NULL,
+    model_id INTEGER NOT NULL REFERENCES models(id) ON DELETE CASCADE
+);
+
+CREATE TABLE types_of_engine (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name_of_type_engine VARCHAR(32) NOT NULL UNIQUE
+);
+
+CREATE TABLE types_of_oil (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name_of_type_oil VARCHAR(32) NOT NULL UNIQUE
+);
+
+CREATE TABLE types_of_drive (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name_of_drive_type VARCHAR(16) NOT NULL UNIQUE
+);
+
+CREATE TABLE types_of_wheel_side (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    wheel_position VARCHAR(16) NOT NULL UNIQUE
+);
+
+CREATE TABLE volumes_of_engine (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    volume DECIMAL(2,1) NOT NULL UNIQUE
+);
+
+CREATE TABLE transmissions (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type_of_transmission VARCHAR(16) NOT NULL UNIQUE
+);
+
+CREATE TABLE car_body_types (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name_of_body VARCHAR(32) NOT NULL UNIQUE
+);
+
+CREATE TABLE colors (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    color_name VARCHAR(32) NOT NULL UNIQUE
+);
+
+CREATE TABLE cities (
+    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name_of_city VARCHAR(128) NOT NULL UNIQUE
+);
+
+CREATE TABLE modifications (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    horse_power SMALLINT,
+    weight SMALLINT,
+    type_of_oil_id SMALLINT NOT NULL REFERENCES types_of_oil(id),
+    wheel_id SMALLINT NOT NULL REFERENCES types_of_wheel_side(id),
+    generations_id INT NOT NULL REFERENCES generations(id) ON DELETE CASCADE,
+    engine_id SMALLINT NOT NULL REFERENCES types_of_engine(id),
+    transmission_id SMALLINT NOT NULL REFERENCES transmissions(id),
+    drive_type_id SMALLINT NOT NULL REFERENCES types_of_drive(id),
+    engine_volume_id SMALLINT NOT NULL REFERENCES volumes_of_engine(id),
+    body_type_id SMALLINT NOT NULL REFERENCES car_body_types(id)
+);
+
+CREATE TABLE users (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_name VARCHAR(64) NOT NULL,
+    email VARCHAR(256) NOT NULL UNIQUE,
+    phone_number VARCHAR(32) NOT NULL UNIQUE,
+    password VARCHAR(256) NOT NULL,
+    role VARCHAR(16) DEFAULT 'user' NOT NULL
+);
+
+CREATE TABLE advertisement (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    price DECIMAL(12,2) NOT NULL,
+    mileage INTEGER NOT NULL,
+    description TEXT,
+    is_cleared_customs BOOLEAN DEFAULT TRUE NOT NULL,
+    date_of_publication_of_advertisement TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    views INTEGER DEFAULT 0 NOT NULL,
+    modification_id INTEGER NOT NULL REFERENCES modifications(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    color_id SMALLINT NOT NULL REFERENCES colors(id),
+    city_id SMALLINT NOT NULL REFERENCES cities(id) ON DELETE CASCADE
+);
+
+CREATE TABLE reviews (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    description TEXT,
+    ownership_start_date DATE NOT NULL,
+    date_of_publication_review DATE NOT NULL,
+    modification_id INTEGER NOT NULL REFERENCES modifications(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE marks_of_reviews (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    review_id BIGINT NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+    vote_value SMALLINT NOT NULL,
+    CONSTRAINT pk_union_user_and_review PRIMARY KEY(user_id, review_id)
+);
