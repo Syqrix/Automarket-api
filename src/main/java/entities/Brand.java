@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "brands")
 @Getter
 @Setter
-public class Brands {
+public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
@@ -20,8 +20,8 @@ public class Brands {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id",nullable = false)
-    private Countries country;
+    private Country country;
 
     @OneToMany(mappedBy = "brand")
-    private List<Models> models = new ArrayList<>();
+    private List<Model> models = new ArrayList<>();
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "users")
 @Getter
 @Setter
-public class Users {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -19,7 +19,7 @@ public class Users {
     @Column(name = "email", nullable = false, unique = true, length = 256)
     private String email;
 
-    @Column(name = "phone_number", nullable = false, unique = true, length = 32)
+    @Column(name = "phone_number", nullable = false, unique = true, length = 16)
     private String phoneNumber;
 
     @Column(name = "password", nullable = false, length = 256)

@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "countries")
 @Getter
 @Setter
-public class Countries {
+public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
@@ -19,5 +19,5 @@ public class Countries {
     private String countryName;
 
     @OneToMany(mappedBy = "country")
-    private List<Brands> brands = new ArrayList<>();
+    private List<Brand> brands = new ArrayList<>();
 }

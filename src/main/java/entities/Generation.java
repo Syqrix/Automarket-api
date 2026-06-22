@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "generations")
 @Getter
 @Setter
-public class Generations {
+public class Generation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -26,10 +26,10 @@ public class Generations {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id", nullable = false)
-    private Models model;
+    private Model model;
 
     @OneToMany(mappedBy = "generation")
-    private List<Modifications> modifications = new ArrayList<>();
+    private List<Modification> modifications = new ArrayList<>();
 
 
 }

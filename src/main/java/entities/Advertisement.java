@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -28,25 +29,25 @@ public class Advertisement {
     private boolean isClearedCustoms;
 
     @Column(name = "date_of_publication_of_advertisement", nullable = false)
-    private ZonedDateTime dateOfPublicationOfAdvertisement;
+    private ZonedDateTime dateOfPublicationOfAdvertisement = ZonedDateTime.now();
 
     @Column(name = "views", nullable = false)
     private int views;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modification_id", nullable = false)
-    private Modifications modification;
+    private Modification modification;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Users user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "color_id", nullable = false)
-    private Colors color;
+    private Color color;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", nullable = false)
-    private Cities city;
+    private City city;
 
 }

@@ -10,7 +10,7 @@ import org.hibernate.annotations.Immutable;
 @Getter
 @Setter
 @Immutable
-public class Colors {
+public class Color {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
