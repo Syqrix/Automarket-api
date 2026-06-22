@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarksOfReviewsId implements Serializable {
+public class MarkOfReviewsId implements Serializable {
 
     @Column(name = "user_id")
     private Integer userId;

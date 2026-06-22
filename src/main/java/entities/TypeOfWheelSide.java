@@ -6,15 +6,15 @@ import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 @Entity
-@Table(name = "types_of_engine")
+@Table(name = "types_of_wheel_side")
 @Getter
 @Setter
 @Immutable
-public class TypesOfEngine {
+public class TypeOfWheelSide {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
 
-    @Column(name = "name_of_type_engine", nullable = false, length = 32, unique = true)
-    private String nameOfTypeEngine;
+    @Column(name = "wheel_position", nullable = false, unique = true, length = 16)
+    private String wheelPosition;
 }

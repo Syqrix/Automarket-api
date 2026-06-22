@@ -4,17 +4,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "types_of_wheel_side")
+@Table(name = "volumes_of_engine")
 @Getter
 @Setter
 @Immutable
-public class TypesOfWheelSide {
+public class VolumeOfEngine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
 
-    @Column(name = "wheel_position", nullable = false, unique = true, length = 16)
-    private String wheelPosition;
+    @Column(name = "volume", nullable = false,unique = true, precision = 3, scale = 1)
+    private BigDecimal volume;
 }

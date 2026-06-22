@@ -10,7 +10,7 @@ import org.hibernate.annotations.Immutable;
 @Getter
 @Setter
 @Immutable
-public class Modifications {
+public class Modification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,29 +23,29 @@ public class Modifications {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wheel_id", nullable = false)
-    private TypesOfWheelSide typeOfWheelSide;
+    private TypeOfWheelSide typeOfWheelSide;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "generations_id", nullable = false)
-    private Generations generation;
+    private Generation generation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "engine_id", nullable = false)
-    private TypesOfEngine typeOfEngine;
+    private TypeOfEngine typeOfEngine;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transmission_id", nullable = false)
-    private Transmissions transmission;
+    private Transmission transmission;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "drive_type_id", nullable = false)
-    private TypesOfDrive typeOfDrive;
+    private TypeOfDrive typeOfDrive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "engine_volume_id", nullable = false)
-    private VolumesOfEngine volumeOfEngine;
+    private VolumeOfEngine volumeOfEngine;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "body_type_id", nullable = false)
-    private CarBodyTypes carBodyType;
+    private CarBodyType carBodyType;
 }
