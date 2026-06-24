@@ -1,10 +1,9 @@
 package dtos;
 
 public record UserResponseDto(
-        Long id,
+        Integer id,
         String userName,
         String email,
         String phoneNumber,
-        String password,
-        String userRole
+        String role
 ) {}
