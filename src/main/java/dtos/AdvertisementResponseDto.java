@@ -11,7 +11,11 @@ public record AdvertisementResponseDto(
         boolean isClearedCustoms,
         ZonedDateTime dateOfPublication,
         Integer views,
-        String carModification,
+        String countryOfOrigin,
+        String brand,
+        String model,
+        String generationName,
+        String techCharacteristics,
         String sellerName,
         String colorName,
         String cityName
