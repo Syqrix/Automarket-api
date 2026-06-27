@@ -90,7 +90,7 @@ CREATE TABLE modifications (
     horse_power SMALLINT,
     weight SMALLINT,
     wheel_id SMALLINT NOT NULL REFERENCES types_of_wheel_side(id),
-    generations_id INT NOT NULL REFERENCES generations(id) ON DELETE RESTRICT,
+    generation_id INT NOT NULL REFERENCES generations(id) ON DELETE RESTRICT,
     engine_id SMALLINT NOT NULL REFERENCES types_of_engine(id),
     transmission_id SMALLINT NOT NULL REFERENCES transmissions(id),
     drive_type_id SMALLINT NOT NULL REFERENCES types_of_drive(id),
@@ -107,7 +107,7 @@ CREATE TABLE users (
     role VARCHAR(16) DEFAULT 'user' NOT NULL
 );
 
-CREATE TABLE advertisement (
+CREATE TABLE advertisements (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     price DECIMAL(12,2) NOT NULL,
     mileage INTEGER NOT NULL,
