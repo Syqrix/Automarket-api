@@ -312,7 +312,7 @@ INSERT INTO generations (year_start, year_end, generation_name, model_id) VALUES
 (2017, NULL, 'Model_3_Base', 225),(2020, NULL, 'Model_Y_Base', 226),(2012, NULL, 'Model_S_Base', 227),
 (2015, NULL, 'Model_X_Base', 228),(2023, NULL, 'Cybertruck_Base', 229);
 
-INSERT INTO modifications (horse_power, weight, wheel_id, generations_id, engine_id, transmission_id, drive_type_id, engine_volume_id, body_type_id) VALUES
+INSERT INTO modifications (horse_power, weight, wheel_id, generation_id, engine_id, transmission_id, drive_type_id, engine_volume_id, body_type_id) VALUES
 -- Toyota
 (152, 1400, 1, 1, 1, 2, 1, 18, 2),   -- Camry XV30 | 2.4 Gasoline Automatic FWD Sedan
 (167, 1465, 1, 2, 1, 2, 1, 18, 2),   -- Camry XV40 | 2.4 Gasoline Automatic FWD Sedan

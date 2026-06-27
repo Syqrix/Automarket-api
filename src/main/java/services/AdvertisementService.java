@@ -21,7 +21,10 @@ public class AdvertisementService {
         var brand = model.getBrand();
         var country = brand.getCountry();
 
-        String techCharacteristics = String.format("%")
+        String techCharacteristics = String.format("%s, %.1f l, %s, %s, %s, %s",
+                modification.getCarBodyType().getNameOfBody(), modification.getVolumeOfEngine().getVolume(),
+                modification.getTypeOfEngine().getNameOfTypeEngine(), modification.getTransmission().getTypeOfTransmission(),
+                modification.getTypeOfDrive().getNameOfDriveType(), modification.getTypeOfWheelSide().getWheelPosition());
 
         return new AdvertisementResponseDto(
                 advertisement.getId(),
@@ -35,18 +38,18 @@ public class AdvertisementService {
                 brand.getBrandName(),
                 model.getModelName(),
                 generation.getGenerationName(),
-
+                techCharacteristics,
                 advertisement.getUser().getUserName(),
                 advertisement.getColor().getColorName(),
                 advertisement.getCity().getNameOfCity()
         );
     }
 
-    public AdvertisementResponseDto createAdvertisement(CreateAdvertisementDto dto){
-        Advertisement advertisement = new Advertisement();
-
-        if(dto.price() != null)
-
-
-    }
+//    public AdvertisementResponseDto createAdvertisement(CreateAdvertisementDto dto){
+//        Advertisement advertisement = new Advertisement();
+//
+//        if(dto.price() != null)
+//
+//
+//    }
 }
