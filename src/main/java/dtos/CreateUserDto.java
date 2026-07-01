@@ -14,6 +14,6 @@ public record CreateUserDto(
         String phoneNumber,
         @NotBlank(message = "Password shouldn't be empty")
         @Size(min = 8, max = 32, message = "Available range for password between 8 and 32")
-        @Pattern(regexp = "^[a-zA-Zа-яА-Я0-9]{8,}$", message = "Min size of password is 8")
+        @Pattern(regexp = "^[a-zA-Zа-яА-Я0-9\\p{InCYRILLIC}]+$", message = "Min size of password is 8")
         String password
 ) {}

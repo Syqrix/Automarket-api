@@ -62,12 +62,12 @@ public class UserService {
 
     public UserResponseDto findUserByPhoneNumber(String phoneNumber){
         return userRepository.findByPhoneNumber(phoneNumber).map(this::mapToResponseDto).orElseThrow(
-                () -> new ResourceNotFoundException("User with phone number " + phoneNumber + "doesn't exist"));
+                () -> new ResourceNotFoundException("User with phone number " + phoneNumber + " doesn't exist"));
     }
 
     public UserResponseDto findUserByEmail(String email){
         return userRepository.findByEmail(email).map(this::mapToResponseDto).orElseThrow(
-                () -> new ResourceNotFoundException("User with email " + email + "doesn't exist"));
+                () -> new ResourceNotFoundException("User with email " + email + " doesn't exist"));
     }
 
     public List<UserResponseDto> findUserByUserName(String userName){
