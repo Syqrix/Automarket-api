@@ -2,16 +2,32 @@ package services;
 
 import dtos.AdvertisementResponseDto;
 import dtos.CreateAdvertisementDto;
+import dtos.UpdateAdvertisementDto;
 import entities.Advertisement;
+import exceptions.ResourceConflictException;
+import exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import repositories.AdvertisementRepository;
+import org.springframework.transaction.annotation.Transactional;
+import repositories.*;
+
+import java.time.ZonedDateTime;
 
 @Service
 public class AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
+    private final UserRepository userRepository;
+    private final CityRepository cityRepository;
+    private final ColorRepository colorRepository;
+    private final ModificationRepository modificationRepository;
 
-    public AdvertisementService(AdvertisementRepository advertisementRepository){
+    public AdvertisementService(AdvertisementRepository advertisementRepository, UserRepository userRepository,
+                                CityRepository cityRepository, ColorRepository colorRepository,
+                                ModificationRepository modificationRepository){
         this.advertisementRepository = advertisementRepository;
+        this.userRepository = userRepository;
+        this.cityRepository = cityRepository;
+        this.colorRepository = colorRepository;
+        this.modificationRepository = modificationRepository;
     }
 
     private AdvertisementResponseDto mapToResponseDto(Advertisement advertisement){
@@ -45,11 +61,79 @@ public class AdvertisementService {
         );
     }
 
-//    public AdvertisementResponseDto createAdvertisement(CreateAdvertisementDto dto){
-//        Advertisement advertisement = new Advertisement();
-//
-//        if(dto.price() != null)
-//
-//
-//    }
+    public AdvertisementResponseDto createAdvertisement(CreateAdvertisementDto dto){
+        if(!userRepository.existsById(dto.userId())){
+            throw new ResourceNotFoundException("There is no such user");
+        }
+
+        Advertisement advertisement = new Advertisement();
+
+        advertisement.setPrice(dto.price());
+        advertisement.setMileage(dto.mileage());
+        advertisement.setDescription(dto.description());
+        advertisement.setClearedCustoms(dto.isClearedCustoms() != null ? dto.isClearedCustoms() : true);
+        advertisement.setViews(0);
+        advertisement.setCity(cityRepository.getReferenceById(dto.cityId()));
+        advertisement.setColor(colorRepository.getReferenceById(dto.colorId()));
+        advertisement.setDateOfPublicationOfAdvertisement(ZonedDateTime.now());
+        advertisement.setUser(userRepository.getReferenceById(dto.userId()));
+        advertisement.setModification(modificationRepository.getReferenceById(dto.modificationId()));
+
+        Advertisement savedAdvertisement = advertisementRepository.save(advertisement);
+
+        return mapToResponseDto(savedAdvertisement);
+
+    }
+
+    @Transactional
+    public AdvertisementResponseDto updateAdvertisement(Long advertisementId, UpdateAdvertisementDto updateAdvertisementDto){
+        Advertisement advertisement = advertisementRepository.findById(advertisementId).
+                orElseThrow(() -> new ResourceNotFoundException("There is no such advertisement"));
+
+        if(!advertisement.getUser().getId().equals(updateAdvertisementDto.userId())){
+            throw new ResourceConflictException("That's not your advertisement. Access denied!");
+        }
+
+        if(updateAdvertisementDto.price() != null){
+            advertisement.setPrice(updateAdvertisementDto.price());
+        }
+
+        if(updateAdvertisementDto.mileage() != null){
+            advertisement.setMileage(updateAdvertisementDto.mileage());
+        }
+
+        if(updateAdvertisementDto.isClearedCustoms() != null){
+            advertisement.setClearedCustoms(updateAdvertisementDto.isClearedCustoms());
+        }
+
+        if(updateAdvertisementDto.colorId() != null){
+            advertisement.setColor(colorRepository.getReferenceById(updateAdvertisementDto.colorId()));
+        }
+
+        if(updateAdvertisementDto.description() != null){
+            advertisement.setDescription(updateAdvertisementDto.description());
+        }
+
+        if(updateAdvertisementDto.cityId() != null){
+            advertisement.setCity(cityRepository.getReferenceById(updateAdvertisementDto.cityId()));
+        }
+
+        if(updateAdvertisementDto.modificationId() != null){
+            advertisement.setModification(modificationRepository.getReferenceById(updateAdvertisementDto.modificationId()));
+        }
+
+        return mapToResponseDto(advertisement);
+    }
+
+    @Transactional
+    public void deleteAdvertisement(Long advertisementId, Integer userId){
+        Advertisement advertisement = advertisementRepository.findById(advertisementId).
+                orElseThrow(() -> new ResourceNotFoundException("There is no such advertisement"));
+
+        if(!advertisement.getUser().getId().equals(userId)){
+            throw new ResourceConflictException("That's not your advertisement. Access denied!");
+        }
+
+        advertisementRepository.delete(advertisement);
+    }
 }

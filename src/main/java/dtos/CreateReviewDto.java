@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public record CreateReviewDto(
+        @NotNull(message = "Your should write something")
         @NotBlank(message = "Your should write something")
         @Size(min = 5, max = 5000, message = "Available range of description between 5 and 5000 symbols")
         String description,
