@@ -32,7 +32,7 @@ public class GlobalHandlerException {
 
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.CONFLICT.value(),
-                HttpStatus.CONTINUE.getReasonPhrase(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
                 ex.getMessage(),
                 "BUSINESS_CONFLICT"
         );
