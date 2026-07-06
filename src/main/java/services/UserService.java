@@ -55,7 +55,7 @@ public class UserService {
     }
 
     public Page<UserResponseDto> showAllUsers(Pageable pageable){
-        Page<User> userPage = userRepository.findAllUsers(pageable);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         return userPage.map(this::mapToResponseDto);
     }
@@ -70,7 +70,7 @@ public class UserService {
                 () -> new ResourceNotFoundException("User with email " + email + " doesn't exist"));
     }
 
-    public List<UserResponseDto> findUserByUserName(String userName){
+    public List<UserResponseDto> findUsersByUserName(String userName){
         List<User> userList = userRepository.findAllUsersByUserName(userName);
         if(userList.isEmpty()){
             throw new ResourceNotFoundException("There are no users with such user name");

@@ -26,7 +26,7 @@ public class Modification {
     private TypeOfWheelSide typeOfWheelSide;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "generations_id", nullable = false)
+    @JoinColumn(name = "generation_id", nullable = false)
     private Generation generation;
 
     @ManyToOne(fetch = FetchType.LAZY)
