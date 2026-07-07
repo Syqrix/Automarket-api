@@ -5,9 +5,6 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 public record UpdateAdvertisementDto(
-        @NotNull(message = "User can't be null")
-        @Positive(message = "This value only can be positive")
-        Integer userId,
         @Positive(message = "Price should be grater than zero")
         @Digits(integer = 12, fraction = 2, message = "Format should be up to 10 digits before comma and 2 after")
         BigDecimal price,
