@@ -6,6 +6,8 @@ import dtos.UpdateAdvertisementDto;
 import entities.Advertisement;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repositories.*;
@@ -37,7 +39,7 @@ public class AdvertisementService {
         var brand = model.getBrand();
         var country = brand.getCountry();
 
-        String techCharacteristics = String.format("%s, %.1f l, %s, %s, %s, %s",
+        String techCharacteristics = String.format("%s, %.1fl, %s, %s, %s, %s",
                 modification.getCarBodyType().getNameOfBody(), modification.getVolumeOfEngine().getVolume(),
                 modification.getTypeOfEngine().getNameOfTypeEngine(), modification.getTransmission().getTypeOfTransmission(),
                 modification.getTypeOfDrive().getNameOfDriveType(), modification.getTypeOfWheelSide().getWheelPosition());
@@ -61,9 +63,22 @@ public class AdvertisementService {
         );
     }
 
+    public Page<AdvertisementResponseDto> getAllAdvertisements(Pageable pageable){
+        Page<Advertisement> page = advertisementRepository.findAll(pageable);
+
+        return page.map(this::mapToResponseDto);
+    }
+
+    public AdvertisementResponseDto getAdvertisementById(Long id){
+        Advertisement advertisement = advertisementRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("There is no such advertisement"));
+
+        return mapToResponseDto(advertisement);
+    }
+
     public AdvertisementResponseDto createAdvertisement(CreateAdvertisementDto dto){
         if(!userRepository.existsById(dto.userId())){
-            throw new ResourceNotFoundException("There is no such user");
+            throw new ResourceConflictException("There is no such user");
         }
 
         Advertisement advertisement = new Advertisement();
@@ -86,11 +101,12 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public AdvertisementResponseDto updateAdvertisement(Long advertisementId, UpdateAdvertisementDto updateAdvertisementDto){
+    public AdvertisementResponseDto updateAdvertisement(
+            Long advertisementId, Integer userId, UpdateAdvertisementDto updateAdvertisementDto){
         Advertisement advertisement = advertisementRepository.findById(advertisementId).
                 orElseThrow(() -> new ResourceNotFoundException("There is no such advertisement"));
 
-        if(!advertisement.getUser().getId().equals(updateAdvertisementDto.userId())){
+        if(!userId.equals(advertisement.getUser().getId())){
             throw new ResourceConflictException("That's not your advertisement. Access denied!");
         }
 
