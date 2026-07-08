@@ -1,4 +1,4 @@
-package dtos;
+package dtos.AdvertisementDtos;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

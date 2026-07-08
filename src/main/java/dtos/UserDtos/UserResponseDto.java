@@ -1,4 +1,4 @@
-package dtos;
+package dtos.UserDtos;
 
 public record UserResponseDto(
         Integer id,

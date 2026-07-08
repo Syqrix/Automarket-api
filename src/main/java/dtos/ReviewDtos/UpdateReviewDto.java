@@ -1,4 +1,4 @@
-package dtos;
+package dtos.ReviewDtos;
 
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
