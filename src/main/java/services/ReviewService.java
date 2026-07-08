@@ -1,8 +1,8 @@
 package services;
 
-import dtos.CreateReviewDto;
-import dtos.ReviewResponseDto;
-import dtos.UpdateReviewDto;
+import dtos.ReviewDtos.CreateReviewDto;
+import dtos.ReviewDtos.ReviewResponseDto;
+import dtos.ReviewDtos.UpdateReviewDto;
 import entities.Review;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;

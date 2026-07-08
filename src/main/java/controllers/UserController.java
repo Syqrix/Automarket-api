@@ -1,11 +1,10 @@
 package controllers;
 
-import dtos.CreateUserDto;
-import dtos.UpdateUserDto;
-import dtos.UserCounterResponseDto;
-import dtos.UserResponseDto;
+import dtos.UserDtos.CreateUserDto;
+import dtos.UserDtos.UpdateUserDto;
+import dtos.UserDtos.UserCounterResponseDto;
+import dtos.UserDtos.UserResponseDto;
 import jakarta.validation.Valid;
-import org.apache.catalina.startup.UserConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

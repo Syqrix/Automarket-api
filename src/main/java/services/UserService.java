@@ -1,9 +1,9 @@
 package services;
 
-import dtos.CreateUserDto;
-import dtos.UpdateUserDto;
-import dtos.UserCounterResponseDto;
-import dtos.UserResponseDto;
+import dtos.UserDtos.CreateUserDto;
+import dtos.UserDtos.UpdateUserDto;
+import dtos.UserDtos.UserCounterResponseDto;
+import dtos.UserDtos.UserResponseDto;
 import entities.User;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;

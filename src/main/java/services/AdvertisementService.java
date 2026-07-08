@@ -1,8 +1,8 @@
 package services;
 
-import dtos.AdvertisementResponseDto;
-import dtos.CreateAdvertisementDto;
-import dtos.UpdateAdvertisementDto;
+import dtos.AdvertisementDtos.AdvertisementResponseDto;
+import dtos.AdvertisementDtos.CreateAdvertisementDto;
+import dtos.AdvertisementDtos.UpdateAdvertisementDto;
 import entities.Advertisement;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;

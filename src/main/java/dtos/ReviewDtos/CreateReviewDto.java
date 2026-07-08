@@ -1,4 +1,4 @@
-package dtos;
+package dtos.ReviewDtos;
 
 import jakarta.validation.constraints.*;
 

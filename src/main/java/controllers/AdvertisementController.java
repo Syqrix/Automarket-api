@@ -1,16 +1,16 @@
 package controllers;
 
-import dtos.AdvertisementResponseDto;
-import dtos.CreateAdvertisementDto;
-import dtos.UpdateAdvertisementDto;
+import dtos.AdvertisementDtos.AdvertisementResponseDto;
+import dtos.AdvertisementDtos.CreateAdvertisementDto;
+import dtos.AdvertisementDtos.UpdateAdvertisementDto;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import repositories.AdvertisementRepository;
 import services.AdvertisementService;
 
 @RestController
@@ -49,9 +49,9 @@ public class AdvertisementController {
 
     @PostMapping
     public ResponseEntity<AdvertisementResponseDto> createAdvertisement(@Valid @RequestBody CreateAdvertisementDto dto){
-        AdvertisementResponseDto advertisement = advertisementService.createAdvertisement(dto);
+        AdvertisementResponseDto createdAdvertisement = advertisementService.createAdvertisement(dto);
 
-        return ResponseEntity.ok(advertisement);
+        return new ResponseEntity<>(createdAdvertisement, HttpStatus.CREATED);
     }
 
     @DeleteMapping()

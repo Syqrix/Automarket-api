@@ -1,7 +1,6 @@
-package dtos;
+package dtos.AdvertisementDtos;
 
 import jakarta.validation.constraints.*;
-import jakarta.websocket.OnMessage;
 
 import java.math.BigDecimal;
 
