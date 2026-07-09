@@ -2,8 +2,8 @@ package controllers;
 
 import dtos.CatalogDtos.BrandAndModelResponseDto;
 import dtos.CatalogDtos.BrandResponseDto;
+import dtos.CatalogDtos.CountryResponseDto;
 import dtos.CatalogDtos.GenerationResponseDto;
-import entities.Brand;
 import entities.City;
 import entities.Color;
 import org.springframework.data.domain.Page;
@@ -11,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import services.CatalogService;
 
 import java.util.List;
@@ -31,49 +28,73 @@ public class CatalogController {
 
     @GetMapping("/colors")
     public ResponseEntity<List<Color>> getAllColors(){
-        return ResponseEntity.ok(catalogService.getAllColors());
+        return ResponseEntity.ok(catalogService.findAllColors());
     }
 
     @GetMapping("/colors/{id}")
     public ResponseEntity<Color> getColorById(@PathVariable Short id){
-        return ResponseEntity.ok(catalogService.getColorById(id));
+        return ResponseEntity.ok(catalogService.findColorById(id));
     }
 
     @GetMapping("/cities")
     public ResponseEntity<List<City>> getAllCities(){
-        return ResponseEntity.ok(catalogService.getAllCities());
+        return ResponseEntity.ok(catalogService.findAllCities());
     }
 
     @GetMapping("/cities/{id}")
     public ResponseEntity<City> getCityById(@PathVariable Short id){
-        return ResponseEntity.ok(catalogService.getCityById(id));
+        return ResponseEntity.ok(catalogService.findCityById(id));
     }
 
     @GetMapping("/brands")
     public ResponseEntity<List<BrandResponseDto>> getAllBrands(){
-        return ResponseEntity.ok(catalogService.getAllBrands());
+        return ResponseEntity.ok(catalogService.findAllBrands());
     }
 
     @GetMapping("/brands/{id}")
     public ResponseEntity<BrandResponseDto> getBrandById(@PathVariable Short id){
-        return ResponseEntity.ok(catalogService.getBrandById(id));
+        return ResponseEntity.ok(catalogService.findBrandById(id));
+    }
+
+    @GetMapping("/brands/country/{id}")
+    public ResponseEntity<List<BrandResponseDto>> getBrandsByCountryId(@PathVariable Short id){
+        return ResponseEntity.ok(catalogService.findBrandsByCountryId(id));
     }
 
     @GetMapping("/models")
     public ResponseEntity<Page<BrandAndModelResponseDto>> getAllModels(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)Pageable pageable){
-        return ResponseEntity.ok(catalogService.getAllModels(pageable));
+        return ResponseEntity.ok(catalogService.findAllModels(pageable));
     }
 
     @GetMapping("/models/{id}")
     public ResponseEntity<BrandAndModelResponseDto> getModelById(@PathVariable Integer id){
-        return ResponseEntity.ok(catalogService.getModelById(id));
+        return ResponseEntity.ok(catalogService.findModelById(id));
+    }
+
+    @GetMapping("/models/brand/{id}")
+    public ResponseEntity<List<BrandAndModelResponseDto>> getModelsByBrandId(@PathVariable Integer id){
+        return ResponseEntity.ok(catalogService.findModelsByBrandId(id));
     }
 
     @GetMapping("/generations")
     public ResponseEntity<Page<GenerationResponseDto>> getAllGenerations(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable){
-        return ResponseEntity.ok(catalogService.getAllGeneration(pageable));
+        return ResponseEntity.ok(catalogService.findAllGeneration(pageable));
+    }
+
+    @GetMapping("/generations/{id}")
+    public ResponseEntity<GenerationResponseDto> getGenerationById(@PathVariable Integer id){
+        return ResponseEntity.ok(catalogService.findGenerationById(id));
+    }
+
+    @GetMapping("/countries")
+    public ResponseEntity<List<CountryResponseDto>> getAllCountries(){
+        return ResponseEntity.ok(catalogService.findAllCountries());
+    }
+    @GetMapping("/countries/{id}")
+    public ResponseEntity<CountryResponseDto> getCountryById(@PathVariable Short id){
+        return ResponseEntity.ok(catalogService.findCountryByCountryId(id));
     }
 
 }

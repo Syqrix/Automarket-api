@@ -5,6 +5,7 @@ import dtos.CatalogDtos.BrandResponseDto;
 import dtos.CatalogDtos.CountryResponseDto;
 import dtos.CatalogDtos.GenerationResponseDto;
 import entities.*;
+import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,21 +15,22 @@ import java.util.List;
 
 @Service
 public class CatalogService {
-
-    private final ModificationRepository modificationRepository;
     private final ModelRepository modelRepository;
     private final ColorRepository colorRepository;
     private final CityRepository cityRepository;
     private final BrandRepository brandRepository;
+    private final GenerationRepository generationRepository;
+    private final CountryRepository countryRepository;
 
     public CatalogService(
-            ModificationRepository modificationRepository, ModelRepository modelRepository, ColorRepository colorRepository,
-            CityRepository cityRepository, BrandRepository brandRepository){
-        this.modificationRepository = modificationRepository;
+            ModelRepository modelRepository, ColorRepository colorRepository, CityRepository cityRepository,
+            BrandRepository brandRepository, GenerationRepository generationRepository, CountryRepository countryRepository){
         this.modelRepository = modelRepository;
         this.colorRepository = colorRepository;
         this.cityRepository = cityRepository;
         this.brandRepository = brandRepository;
+        this.generationRepository = generationRepository;
+        this.countryRepository = countryRepository;
     }
 
     private BrandResponseDto mapToBrandResponseDto(Brand brand){
@@ -38,9 +40,7 @@ public class CatalogService {
         );
     }
 
-    private CountryResponseDto mapToCountryResponseDto(Brand brand){
-        var country = brand.getCountry();
-
+    private CountryResponseDto mapToCountryResponseDto(Country country){
         return new CountryResponseDto(
                 country.getId(),
                 country.getCountryName()
@@ -56,8 +56,7 @@ public class CatalogService {
         );
     }
 
-    private GenerationResponseDto mapToModificationResponseDto(Modification modification){
-        var generation = modification.getGeneration();
+    private GenerationResponseDto mapToGenerationResponseDto(Generation generation){
         var model = generation.getModel();
         var brand = model.getBrand();
         return new GenerationResponseDto(
@@ -68,7 +67,7 @@ public class CatalogService {
         );
     }
 
-    public List<Color> getAllColors(){
+    public List<Color> findAllColors(){
         List<Color> colorList = colorRepository.findAll();
 
         if(colorList.isEmpty()){
@@ -78,12 +77,12 @@ public class CatalogService {
         return colorList;
     }
 
-    public Color getColorById(Short id){
+    public Color findColorById(Short id){
         return colorRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("There is no color with such id"));
     }
 
-    public List<City> getAllCities(){
+    public List<City> findAllCities(){
         List<City> cityList = cityRepository.findAll();
 
         if(cityList.isEmpty()){
@@ -93,12 +92,12 @@ public class CatalogService {
         return cityList;
     }
 
-    public City getCityById(Short id){
+    public City findCityById(Short id){
         return cityRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("There is no city with such id"));
     }
 
-    public List<BrandResponseDto> getAllBrands(){
+    public List<BrandResponseDto> findAllBrands(){
         List<Brand> BrandList = brandRepository.findAll();
 
         if(BrandList.isEmpty()){
@@ -108,22 +107,31 @@ public class CatalogService {
         return BrandList.stream().map(this::mapToBrandResponseDto).toList();
     }
 
-    public BrandResponseDto getBrandById(Short id){
+    public BrandResponseDto findBrandById(Short id){
         return mapToBrandResponseDto(brandRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("There is no brand with such id")));
     }
 
-    public List<CountryResponseDto> getAllCountries(){
-        List<Brand> brandsList = brandRepository.findAll();
+    public List<CountryResponseDto> findAllCountries(){
+        List<Country> countiesList = countryRepository.findAll();
 
-        if(brandsList.isEmpty()){
+        if(countiesList.isEmpty()){
             throw new ResourceNotFoundException("There are no countries");
         }
 
-        return brandsList.stream().map(this::mapToCountryResponseDto).toList();
+        return countiesList.stream().map(this::mapToCountryResponseDto).toList();
     }
 
-    public Page<BrandAndModelResponseDto> getAllModels(Pageable pageable){
+    public List<BrandResponseDto> findBrandsByCountryId(Short id){
+        List<Brand> brandList = brandRepository.findByCountryId(id);
+        if(brandList.isEmpty()){
+            throw new ResourceConflictException("There is no brands with such id");
+        }
+
+        return brandList.stream().map(this::mapToBrandResponseDto).toList();
+    }
+
+    public Page<BrandAndModelResponseDto> findAllModels(Pageable pageable){
         Page<Model> modelPage = modelRepository.findAll(pageable);
 
         if(modelPage.isEmpty()){
@@ -133,22 +141,43 @@ public class CatalogService {
         return modelPage.map(this::mapToBrandAndModelResponseDto);
     }
 
-    public BrandAndModelResponseDto getModelById(Integer id){
+    public BrandAndModelResponseDto findModelById(Integer id){
         Model model = modelRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("There is no such model"));
 
         return mapToBrandAndModelResponseDto(model);
     }
 
-    public Page<GenerationResponseDto> getAllGeneration(Pageable pageable){
-        Page<Modification> modificationPage = modificationRepository.findAll(pageable);
+    public Page<GenerationResponseDto> findAllGeneration(Pageable pageable){
+        Page<Generation> modificationPage = generationRepository.findAll(pageable);
         if(modificationPage.isEmpty()){
             throw new ResourceNotFoundException("There are no modifications");
         }
 
-        return modificationPage.map(this::mapToModificationResponseDto);
+        return modificationPage.map(this::mapToGenerationResponseDto);
     }
 
+    public GenerationResponseDto findGenerationById(Integer id){
+        Generation generation = generationRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("There is no such generation"));
 
+        return mapToGenerationResponseDto(generation);
+    }
+
+    public CountryResponseDto findCountryByCountryId(Short id){
+        Country country = countryRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("There is no such country with id: " + id));
+
+        return mapToCountryResponseDto(country);
+    }
+
+    public List<BrandAndModelResponseDto> findModelsByBrandId(Integer id){
+        List<Model> modelsList = modelRepository.findByBrandId(id);
+        if(modelsList.isEmpty()){
+            throw new ResourceNotFoundException("There are no models with brandId: " + id);
+        }
+
+        return modelsList.stream().map(this::mapToBrandAndModelResponseDto).toList();
+    }
 
 }
