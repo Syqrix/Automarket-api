@@ -1,6 +1,7 @@
 package controllers;
 
 import dtos.AdvertisementDtos.AdvertisementResponseDto;
+import dtos.AdvertisementDtos.AdvertisementSearchDto;
 import dtos.AdvertisementDtos.CreateAdvertisementDto;
 import dtos.AdvertisementDtos.UpdateAdvertisementDto;
 import jakarta.validation.Valid;
@@ -21,6 +22,12 @@ public class AdvertisementController {
 
     public AdvertisementController(AdvertisementService advertisementService){
         this.advertisementService = advertisementService;
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<AdvertisementResponseDto>> search(@Valid AdvertisementSearchDto dto, @PageableDefault(
+                    size = 10, sort = "dateOfPublicationOfAdvertisement", direction = Sort.Direction.DESC) Pageable pageable){
+        return ResponseEntity.ok(advertisementService.search(dto, pageable));
     }
 
     @GetMapping

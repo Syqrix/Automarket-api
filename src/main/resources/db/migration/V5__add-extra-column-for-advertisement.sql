@@ -1,0 +1,1 @@
+ALTER TABLE advertisements ADD COLUMN year_of_release SMALLINT NOT NULL DEFAULT 2020;

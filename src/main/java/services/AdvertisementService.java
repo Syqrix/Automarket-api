@@ -1,6 +1,7 @@
 package services;
 
 import dtos.AdvertisementDtos.AdvertisementResponseDto;
+import dtos.AdvertisementDtos.AdvertisementSearchDto;
 import dtos.AdvertisementDtos.CreateAdvertisementDto;
 import dtos.AdvertisementDtos.UpdateAdvertisementDto;
 import entities.Advertisement;
@@ -8,10 +9,10 @@ import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repositories.*;
-
 import java.time.ZonedDateTime;
 
 @Service
@@ -39,6 +40,9 @@ public class AdvertisementService {
         var brand = model.getBrand();
         var country = brand.getCountry();
 
+        String yearOfGeneration = String.format("(%s-%s)",
+                generation.getYearStart(), generation.getYearEnd());
+
         String techCharacteristics = String.format("%s, %.1fl, %s, %s, %s, %s",
                 modification.getCarBodyType().getNameOfBody(), modification.getVolumeOfEngine().getVolume(),
                 modification.getTypeOfEngine().getNameOfTypeEngine(), modification.getTransmission().getTypeOfTransmission(),
@@ -56,6 +60,8 @@ public class AdvertisementService {
                 brand.getBrandName(),
                 model.getModelName(),
                 generation.getGenerationName(),
+                yearOfGeneration,
+                advertisement.getYearOfRelease().toString(),
                 techCharacteristics,
                 advertisement.getUser().getUserName(),
                 advertisement.getColor().getColorName(),
@@ -63,8 +69,41 @@ public class AdvertisementService {
         );
     }
 
+    public Page<AdvertisementResponseDto> search(AdvertisementSearchDto dto, Pageable pageable){
+        Specification<Advertisement> spec = Specification.anyOf();
+
+        spec = spec.and(AdvertisementSpecification.priceBetween(dto))
+                .and(AdvertisementSpecification.volumeEngineBetween(dto))
+                .and(AdvertisementSpecification.hasCharacteristics(dto))
+                .and(AdvertisementSpecification.mileageBetween(dto));
+
+        if(dto.isClearedCustoms() != null){
+            spec = spec.and(AdvertisementSpecification.isClearedCustoms(dto.isClearedCustoms()));
+        }
+
+        if(dto.cityId() != null){
+            spec = spec.and(AdvertisementSpecification.hasCity(dto.cityId()));
+        }
+
+        if(dto.colorId() != null){
+            spec = spec.and(AdvertisementSpecification.hasColor(dto.colorId()));
+        }
+
+        Page<Advertisement> pageOfAdvertisement = advertisementRepository.findAll(spec, pageable);
+        if(pageOfAdvertisement.isEmpty()){
+            throw new ResourceNotFoundException("There are no advertisements");
+        }
+
+
+        return pageOfAdvertisement.map(this::mapToResponseDto);
+    }
+
     public Page<AdvertisementResponseDto> getAllAdvertisements(Pageable pageable){
         Page<Advertisement> page = advertisementRepository.findAll(pageable);
+
+        if(page.isEmpty()){
+            throw new ResourceNotFoundException("There are no advertisements");
+        }
 
         return page.map(this::mapToResponseDto);
     }
@@ -80,6 +119,11 @@ public class AdvertisementService {
         if(!userRepository.existsById(dto.userId())){
             throw new ResourceConflictException("There is no such user");
         }
+        int currentDate = java.time.Year.now().getValue();
+
+        if(dto.yearOfRelease() > currentDate){
+            throw new IllegalArgumentException("Year of release can't be grater than current year");
+        }
 
         Advertisement advertisement = new Advertisement();
 
@@ -88,6 +132,7 @@ public class AdvertisementService {
         advertisement.setDescription(dto.description());
         advertisement.setClearedCustoms(dto.isClearedCustoms() != null ? dto.isClearedCustoms() : true);
         advertisement.setViews(0);
+        advertisement.setYearOfRelease(dto.yearOfRelease());
         advertisement.setCity(cityRepository.getReferenceById(dto.cityId()));
         advertisement.setColor(colorRepository.getReferenceById(dto.colorId()));
         advertisement.setDateOfPublicationOfAdvertisement(ZonedDateTime.now());
@@ -109,6 +154,17 @@ public class AdvertisementService {
         if(!userId.equals(advertisement.getUser().getId())){
             throw new ResourceConflictException("That's not your advertisement. Access denied!");
         }
+
+        if(updateAdvertisementDto.yearOfRelease() != null){
+            int currentDate = java.time.Year.now().getValue();
+
+            if(updateAdvertisementDto.yearOfRelease() > currentDate){
+                throw new IllegalArgumentException("Year of release can't be grater than current year");
+            }
+
+            advertisement.setYearOfRelease(updateAdvertisementDto.yearOfRelease());
+        }
+
 
         if(updateAdvertisementDto.price() != null){
             advertisement.setPrice(updateAdvertisementDto.price());
