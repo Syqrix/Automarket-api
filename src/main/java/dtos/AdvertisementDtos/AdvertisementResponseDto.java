@@ -15,6 +15,8 @@ public record AdvertisementResponseDto(
         String brand,
         String model,
         String generationName,
+        String yearOfGeneration,
+        String yearOfRelease,
         String techCharacteristics,
         String sellerName,
         String colorName,

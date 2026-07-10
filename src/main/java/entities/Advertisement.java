@@ -50,4 +50,7 @@ public class Advertisement {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
+    @Column(name = "year_of_release", nullable = false)
+    private Short yearOfRelease;
+
 }
