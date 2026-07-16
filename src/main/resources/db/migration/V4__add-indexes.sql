@@ -10,12 +10,12 @@ CREATE INDEX idx_modifications_drive_type_id ON modifications (drive_type_id);
 CREATE INDEX idx_modifications_engine_volume_id ON modifications (engine_volume_id);
 CREATE INDEX idx_modifications_body_type_id ON modifications (body_type_id);
 
-CREATE INDEX idx_advertisement_modification_id ON advertisements (modification_id);
-CREATE INDEX idx_advertisement_user_id ON advertisements (user_id);
-CREATE INDEX idx_advertisement_color_id ON advertisements (color_id);
-CREATE INDEX idx_advertisement_city_id ON advertisements (city_id);
+CREATE INDEX idx_advertisements_modification_id ON advertisements (modification_id);
+CREATE INDEX idx_advertisements_user_id ON advertisements (user_id);
+CREATE INDEX idx_advertisements_color_id ON advertisements (color_id);
+CREATE INDEX idx_advertisements_city_id ON advertisements (city_id);
 
-CREATE INDEX idx_advertisement_city_id_and_price ON advertisements (city_id, price);
+CREATE INDEX idx_advertisements_city_id_and_price ON advertisements (city_id, price);
 
 CREATE INDEX idx_reviews_modification_id ON reviews (modification_id);
 CREATE INDEX idx_reviews_user_id ON reviews (user_id);
