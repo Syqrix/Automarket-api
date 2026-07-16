@@ -116,14 +116,23 @@ public class AdvertisementService {
     }
 
     public AdvertisementResponseDto createAdvertisement(CreateAdvertisementDto dto){
+        int currentDate = java.time.Year.now().getValue();
+        var modification = modificationRepository.findById(dto.modificationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Modification with id " + dto.modificationId() + " not found"));
+        var generation = modification.getGeneration();
         if(!userRepository.existsById(dto.userId())){
             throw new ResourceConflictException("There is no such user");
         }
-        int currentDate = java.time.Year.now().getValue();
 
         if(dto.yearOfRelease() > currentDate){
             throw new IllegalArgumentException("Year of release can't be grater than current year");
         }
+
+        if (dto.yearOfRelease() < generation.getYearStart() ||
+                (generation.getYearEnd() != null && dto.yearOfRelease() > generation.getYearEnd())) {
+            throw new ResourceConflictException("Your year of release not in range of your car generation");
+        }
+
 
         Advertisement advertisement = new Advertisement();
 
@@ -142,7 +151,6 @@ public class AdvertisementService {
         Advertisement savedAdvertisement = advertisementRepository.save(advertisement);
 
         return mapToResponseDto(savedAdvertisement);
-
     }
 
     @Transactional

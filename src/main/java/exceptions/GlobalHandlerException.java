@@ -80,8 +80,8 @@ public class GlobalHandlerException {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                "Iternal server error. Please try again later.",
-                "ITERNAL_SERVER_ERROR"
+                "Internal server error. Please try again later.",
+                "INTERNAL_SERVER_ERROR"
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
