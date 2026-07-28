@@ -7,6 +7,7 @@ import dtos.UserDtos.UserResponseDto;
 import entities.User;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +55,7 @@ public class UserService {
         return mapToResponseDto(user);
     }
 
+    @Cacheable(value = "user-cache", sync = true)
     public Page<UserResponseDto> showAllUsers(Pageable pageable){
         Page<User> userPage = userRepository.findAll(pageable);
 

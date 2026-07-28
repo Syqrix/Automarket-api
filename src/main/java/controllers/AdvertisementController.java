@@ -1,9 +1,6 @@
 package controllers;
 
-import dtos.AdvertisementDtos.AdvertisementResponseDto;
-import dtos.AdvertisementDtos.AdvertisementSearchDto;
-import dtos.AdvertisementDtos.CreateAdvertisementDto;
-import dtos.AdvertisementDtos.UpdateAdvertisementDto;
+import dtos.AdvertisementDtos.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,24 +36,24 @@ public class AdvertisementController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AdvertisementResponseDto> getAdvertisementById(@PathVariable Long id){
-        AdvertisementResponseDto advertisement = advertisementService.getAdvertisementById(id);
+    public ResponseEntity<AdvertisementResponseExtendedDto> getAdvertisementById(@PathVariable Long id){
+        AdvertisementResponseExtendedDto advertisement = advertisementService.getAdvertisementById(id);
 
         return ResponseEntity.ok(advertisement);
     }
 
     @PutMapping
-    public ResponseEntity<AdvertisementResponseDto> updateAdvertisement(
+    public ResponseEntity<AdvertisementResponseExtendedDto> updateAdvertisement(
             @RequestParam Long advertisementId, @RequestParam Integer userId, @Valid @RequestBody UpdateAdvertisementDto dto){
-        AdvertisementResponseDto updatedAdvertisement =
+        AdvertisementResponseExtendedDto updatedAdvertisement =
                 advertisementService.updateAdvertisement(advertisementId, userId,  dto);
 
         return ResponseEntity.ok(updatedAdvertisement);
     }
 
     @PostMapping
-    public ResponseEntity<AdvertisementResponseDto> createAdvertisement(@Valid @RequestBody CreateAdvertisementDto dto){
-        AdvertisementResponseDto createdAdvertisement = advertisementService.createAdvertisement(dto);
+    public ResponseEntity<AdvertisementResponseExtendedDto> createAdvertisement(@Valid @RequestBody CreateAdvertisementDto dto){
+        AdvertisementResponseExtendedDto createdAdvertisement = advertisementService.createAdvertisement(dto);
 
         return new ResponseEntity<>(createdAdvertisement, HttpStatus.CREATED);
     }

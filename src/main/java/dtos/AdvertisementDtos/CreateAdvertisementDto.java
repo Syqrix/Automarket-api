@@ -9,6 +9,8 @@ public record CreateAdvertisementDto(
         @NotNull(message = "Price can't be null")
         @Positive(message = "Price should be grater than zero")
         @Digits(integer = 12, fraction = 2, message = "Format should be up to 10 digits before comma and 2 after")
+        @DecimalMin(value = "10000.00", message = "Price can't be less than 10000")
+        @DecimalMax(value = "500000000.00", message = "The price higher than possible (Max: 500 mln)")
         BigDecimal price,
         @NotNull(message = "Year of release can't be null")
         @Min(value = 1900, message = "The year of release can't be less than 1900")
