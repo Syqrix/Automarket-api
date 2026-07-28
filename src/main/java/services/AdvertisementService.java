@@ -1,19 +1,22 @@
 package services;
 
-import dtos.AdvertisementDtos.AdvertisementResponseDto;
-import dtos.AdvertisementDtos.AdvertisementSearchDto;
-import dtos.AdvertisementDtos.CreateAdvertisementDto;
-import dtos.AdvertisementDtos.UpdateAdvertisementDto;
+import dtos.AdvertisementDtos.*;
 import entities.Advertisement;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repositories.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZonedDateTime;
+import java.util.List;
+
 
 @Service
 public class AdvertisementService {
@@ -33,22 +36,24 @@ public class AdvertisementService {
         this.modificationRepository = modificationRepository;
     }
 
-    private AdvertisementResponseDto mapToResponseDto(Advertisement advertisement){
+    private AdvertisementResponseExtendedDto mapToExtendedResponseDto(Advertisement advertisement){
         var modification = advertisement.getModification();
         var generation = modification.getGeneration();
         var model = generation.getModel();
         var brand = model.getBrand();
         var country = brand.getCountry();
 
+        var endYear = (generation.getYearEnd() == null) ? java.time.Year.now() : generation.getYearEnd();
+
         String yearOfGeneration = String.format("(%s-%s)",
-                generation.getYearStart(), generation.getYearEnd());
+                generation.getYearStart(), endYear);
 
         String techCharacteristics = String.format("%s, %.1fl, %s, %s, %s, %s",
                 modification.getCarBodyType().getNameOfBody(), modification.getVolumeOfEngine().getVolume(),
                 modification.getTypeOfEngine().getNameOfTypeEngine(), modification.getTransmission().getTypeOfTransmission(),
                 modification.getTypeOfDrive().getNameOfDriveType(), modification.getTypeOfWheelSide().getWheelPosition());
 
-        return new AdvertisementResponseDto(
+        return new AdvertisementResponseExtendedDto(
                 advertisement.getId(),
                 advertisement.getPrice(),
                 advertisement.getMileage(),
@@ -66,6 +71,30 @@ public class AdvertisementService {
                 advertisement.getUser().getUserName(),
                 advertisement.getColor().getColorName(),
                 advertisement.getCity().getNameOfCity()
+        );
+    }
+
+    private AdvertisementResponseDto mapToResponseDto(Advertisement advertisement){
+        var modification = advertisement.getModification();
+        var generation = modification.getGeneration();
+        var model = generation.getModel();
+        var brand = model.getBrand();
+
+        String techCharacteristics = String.format("%s, %.1fl, %s, %s, %s, %s",
+                modification.getCarBodyType().getNameOfBody(), modification.getVolumeOfEngine().getVolume(),
+                modification.getTypeOfEngine().getNameOfTypeEngine(), modification.getTransmission().getTypeOfTransmission(),
+                modification.getTypeOfDrive().getNameOfDriveType(), modification.getTypeOfWheelSide().getWheelPosition());
+
+        return new AdvertisementResponseDto(
+                advertisement.getId(),
+                advertisement.getPrice(),
+                advertisement.getDateOfPublicationOfAdvertisement(),
+                advertisement.getViews(),
+                brand.getBrandName(),
+                model.getModelName(),
+                advertisement.getYearOfRelease().toString(),
+                techCharacteristics,
+                advertisement.getUser().getUserName()
         );
     }
 
@@ -108,31 +137,42 @@ public class AdvertisementService {
         return page.map(this::mapToResponseDto);
     }
 
-    public AdvertisementResponseDto getAdvertisementById(Long id){
+    public AdvertisementResponseExtendedDto getAdvertisementById(Long id){
         Advertisement advertisement = advertisementRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("There is no such advertisement"));
 
-        return mapToResponseDto(advertisement);
+        advertisement.setViews(advertisement.getViews() + 1);
+
+        advertisementRepository.save(advertisement);
+
+        return mapToExtendedResponseDto(advertisement);
     }
 
-    public AdvertisementResponseDto createAdvertisement(CreateAdvertisementDto dto){
-        int currentDate = java.time.Year.now().getValue();
+    public AdvertisementResponseExtendedDto createAdvertisement(CreateAdvertisementDto dto){
         var modification = modificationRepository.findById(dto.modificationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Modification with id " + dto.modificationId() + " not found"));
         var generation = modification.getGeneration();
+
+        BigDecimal avgPrice = advertisementRepository.findAveragePriceByModificationId(dto.modificationId());
+
+        if(avgPrice != null){
+            BigDecimal loverBound = avgPrice.multiply(BigDecimal.valueOf(0.3));
+            BigDecimal upperBound = avgPrice.multiply(BigDecimal.valueOf(3.0));
+
+            if(dto.price().compareTo(loverBound) < 0 || dto.price().compareTo(upperBound) > 0){
+                throw new ResourceConflictException("Your price looks not correct if compare to avg: "
+                        + avgPrice.intValue() + " please check your price");
+            }
+        }
+
         if(!userRepository.existsById(dto.userId())){
             throw new ResourceConflictException("There is no such user");
         }
 
-        if(dto.yearOfRelease() > currentDate){
-            throw new IllegalArgumentException("Year of release can't be grater than current year");
-        }
-
-        if (dto.yearOfRelease() < generation.getYearStart() ||
+        if(dto.yearOfRelease() < generation.getYearStart() ||
                 (generation.getYearEnd() != null && dto.yearOfRelease() > generation.getYearEnd())) {
             throw new ResourceConflictException("Your year of release not in range of your car generation");
         }
-
 
         Advertisement advertisement = new Advertisement();
 
@@ -150,11 +190,11 @@ public class AdvertisementService {
 
         Advertisement savedAdvertisement = advertisementRepository.save(advertisement);
 
-        return mapToResponseDto(savedAdvertisement);
+        return mapToExtendedResponseDto(savedAdvertisement);
     }
 
     @Transactional
-    public AdvertisementResponseDto updateAdvertisement(
+    public AdvertisementResponseExtendedDto updateAdvertisement(
             Long advertisementId, Integer userId, UpdateAdvertisementDto updateAdvertisementDto){
         Advertisement advertisement = advertisementRepository.findById(advertisementId).
                 orElseThrow(() -> new ResourceNotFoundException("There is no such advertisement"));
@@ -202,7 +242,7 @@ public class AdvertisementService {
             advertisement.setModification(modificationRepository.getReferenceById(updateAdvertisementDto.modificationId()));
         }
 
-        return mapToResponseDto(advertisement);
+        return mapToExtendedResponseDto(advertisement);
     }
 
     @Transactional

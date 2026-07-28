@@ -2,8 +2,18 @@ server:
   port: ${SERVER_PORT}
 
 spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cache:
+    type: redis
   application:
     name: ${APP_NAME}
+    cache:
+      ttl:
+        users: 10m
+        products: 2h
   datasource:
     url: jdbc:postgresql://localhost:${DB_PORT}/${DB_NAME}
     username: ${DB_USER}

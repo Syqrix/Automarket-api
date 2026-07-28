@@ -6,6 +6,8 @@ import dtos.ReviewDtos.UpdateReviewDto;
 import entities.Review;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repositories.ModificationRepository;
@@ -43,6 +45,21 @@ public class ReviewService {
                 carFullName,
                 review.getUser().getUserName()
         );
+    }
+
+    public Page<ReviewResponseDto> getAllReviews(Pageable pageable){
+        Page<Review> reviewsPage = reviewRepository.findAll(pageable);
+
+        if(reviewsPage.isEmpty()){
+            throw new ResourceNotFoundException("There are no reviews");
+        }
+
+        return reviewsPage.map(this::mapToResponse);
+    }
+
+    public ReviewResponseDto getReview(Long reviewId){
+        return mapToResponse(reviewRepository.findById(reviewId).orElseThrow(
+                () -> new ResourceNotFoundException("There is no such review with id: " + reviewId)));
     }
 
     public ReviewResponseDto createReview(CreateReviewDto dto){
@@ -96,10 +113,15 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Long reviewId){
+    public void deleteReview(Long reviewId, Integer userId){
         Review review = reviewRepository.findById(reviewId).
                 orElseThrow(() -> new ResourceNotFoundException("There is no such review"));
 
+        if(!review.getUser().getId().equals(userId)){
+            throw new ResourceConflictException("You can delete only your reviews");
+        }
+
         reviewRepository.delete(review);
     }
+
 }
