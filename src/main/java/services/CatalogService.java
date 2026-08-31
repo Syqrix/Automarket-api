@@ -7,7 +7,6 @@ import dtos.CatalogDtos.GenerationResponseDto;
 import entities.*;
 import exceptions.ResourceConflictException;
 import exceptions.ResourceNotFoundException;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -83,7 +82,6 @@ public class CatalogService {
                 () -> new ResourceNotFoundException("There is no color with such id"));
     }
 
-    @Cacheable(value = "cities", key = "'all'")
     public List<City> findAllCities(){
         List<City> cityList = cityRepository.findAll();
 

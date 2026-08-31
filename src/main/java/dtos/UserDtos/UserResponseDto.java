@@ -1,6 +1,5 @@
 package dtos.UserDtos;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 public record UserResponseDto(

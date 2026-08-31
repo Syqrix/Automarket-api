@@ -3,7 +3,6 @@ package dtos.AdvertisementDtos;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public record CreateAdvertisementDto(
         @NotNull(message = "Price can't be null")
