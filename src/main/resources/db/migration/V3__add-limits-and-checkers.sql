@@ -1,0 +1,12 @@
+ALTER TABLE generations ADD CHECK (year_start > 1950);
+ALTER TABLE generations ADD CHECK (year_end IS NULL OR year_end > 1950);
+ALTER TABLE generations ADD CHECK (year_end >= year_start);
+ALTER TABLE modifications ADD CHECK (horse_power > 0);
+ALTER TABLE modifications ADD CHECK (weight > 0);
+ALTER TABLE users ADD CHECK (email LIKE '%gmail.com');
+ALTER TABLE users ADD CHECK (LENGTH(phone_number) >= 11);
+ALTER TABLE users ADD CHECK (role IN ('user', 'admin', 'seller'));
+ALTER TABLE advertisements ADD CHECK (price > 0);
+ALTER TABLE advertisements ADD CHECK (mileage >= 0);
+ALTER TABLE reviews ADD CHECK (ownership_start_date > '1950-01-01');
+ALTER TABLE marks_of_reviews ADD CHECK (vote_value = -1 OR vote_value = 1);
